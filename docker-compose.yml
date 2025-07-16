@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: usuario       # cámbialo por tu usuario deseado
+      POSTGRES_PASSWORD: clave     # cámbialo por tu contraseña segura
+      POSTGRES_DB: midb            # nombre de la BD que quieras crear
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: . # Construye la imagen desde el Dockerfile en el directorio actual
+    ports:
+      # Mapea el puerto 8000 del host al puerto 8002 del contenedor (donde Uvicorn escucha)
+      - "8002:8002"
+    depends_on:
+      - db # Asegura que el servicio 'db' se inicie antes que 'backend'
+    restart: on-failure # Opcional: Reinicia el backend si falla
+
+volumes:
+  db_data:
